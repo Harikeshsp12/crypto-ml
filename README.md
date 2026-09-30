@@ -368,7 +368,7 @@ httpx==0.27.0
 
 ## 👤 Author
 
-**Harik**
+**Harikesh**
 - Project: Cryptocurrency Market Prediction using Machine Learning
 - Domain: Predictive Analytics · Financial Technology · Deep Learning
 - Tools: Python · Scikit-learn · FastAPI · Chart.js
