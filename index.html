@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crypto ML Prediction — Market Intelligence Dashboard</title>
+  <meta name="description" content="Machine Learning–driven cryptocurrency price prediction dashboard for BTC, ETH, BNB, SOL, XRP using LSTM, Random Forest, and Linear Regression models." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+
+  <!-- ════════ SIDEBAR ════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">⬡</div>
+      <div>
+        <div class="brand-name">CryptoML</div>
+        <div class="brand-sub">Market Predictor</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Coins</div>
+    <nav class="coin-list" id="coinList">
+      <!-- populated by JS -->
+    </nav>
+
+    <div class="sidebar-section-label">Forecast</div>
+    <div class="days-control">
+      <label class="days-label">Horizon</label>
+      <div class="days-buttons">
+        <button class="day-btn active" data-days="7"  id="btn7">7d</button>
+        <button class="day-btn"        data-days="14" id="btn14">14d</button>
+        <button class="day-btn"        data-days="30" id="btn30">30d</button>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">Models</div>
+    <div class="model-toggles" id="modelToggles">
+      <label class="model-toggle" id="toggle-lstm">
+        <input type="checkbox" checked id="chk-lstm" /> Neural Net (MLP)
+        <span class="model-dot" style="background:#a78bfa"></span>
+      </label>
+      <label class="model-toggle" id="toggle-rf">
+        <input type="checkbox" checked id="chk-rf" /> Random Forest
+        <span class="model-dot" style="background:#34d399"></span>
+      </label>
+      <label class="model-toggle" id="toggle-lr">
+        <input type="checkbox" checked id="chk-lr" /> Linear Regression
+        <span class="model-dot" style="background:#fb923c"></span>
+      </label>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="status-row" id="statusRow">
+        <span class="status-dot idle" id="statusDot"></span>
+        <span id="statusText">Ready</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ════════ MAIN ════════ -->
+  <main class="main" id="main">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="coin-title" id="coinTitle">Select a Coin</div>
+        <div class="coin-subtitle" id="coinSubtitle">— — —</div>
+      </div>
+      <div class="topbar-right">
+        <div class="stat-card" id="statPrice">
+          <div class="stat-label">Price</div>
+          <div class="stat-value" id="priceVal">—</div>
+        </div>
+        <div class="stat-card" id="statChange1d">
+          <div class="stat-label">24h Change</div>
+          <div class="stat-value" id="change1dVal">—</div>
+        </div>
+        <div class="stat-card" id="statChange7d">
+          <div class="stat-label">7d Change</div>
+          <div class="stat-value" id="change7dVal">—</div>
+        </div>
+        <div class="stat-card" id="statMcap">
+          <div class="stat-label">Market Cap</div>
+          <div class="stat-value" id="mcapVal">—</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main chart -->
+    <section class="chart-section glass">
+      <div class="chart-header">
+        <div class="chart-title">Price History &amp; ML Forecast</div>
+        <div class="chart-legend" id="chartLegend">
+          <span class="legend-item"><span class="legend-dot" style="background:#64748b"></span>Historical</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#a78bfa"></span>Neural Net (MLP)</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#34d399"></span>Random Forest</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#fb923c"></span>Linear Regression</span>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="mainChart"></canvas>
+        <div class="chart-overlay" id="chartOverlay">
+          <div class="overlay-icon">🪙</div>
+          <div class="overlay-text">Select a coin to view predictions</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom row -->
+    <div class="bottom-row">
+
+      <!-- RSI -->
+      <section class="indicator-card glass" id="rsiCard">
+        <div class="indicator-title">RSI <span class="indicator-sub">(14-day)</span></div>
+        <div class="rsi-gauge" id="rsiGauge">
+          <canvas id="rsiChart"></canvas>
+          <div class="rsi-value" id="rsiVal">—</div>
+          <div class="rsi-label" id="rsiLabel">—</div>
+        </div>
+      </section>
+
+      <!-- MACD -->
+      <section class="indicator-card glass wide" id="macdCard">
+        <div class="indicator-title">MACD <span class="indicator-sub">Signal vs Line</span></div>
+        <div class="chart-wrap short">
+          <canvas id="macdChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Bollinger Bands -->
+      <section class="indicator-card glass wide" id="bbCard">
+        <div class="indicator-title">Bollinger Bands <span class="indicator-sub">(20-day, 2σ)</span></div>
+        <div class="chart-wrap short">
+          <canvas id="bbChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Market Cap -->
+      <section class="indicator-card glass" id="mcapCard">
+        <div class="indicator-title">Market Cap Trend</div>
+        <div class="chart-wrap short">
+          <canvas id="mcapChart"></canvas>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Model metrics -->
+    <section class="metrics-section glass" id="metricsSection">
+      <div class="chart-title">Model Performance Metrics</div>
+      <div class="metrics-grid" id="metricsGrid">
+        <div class="metric-placeholder">Train models to see evaluation metrics</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Loading…</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
